@@ -1,13 +1,12 @@
 namespace VContainerSourceGenerator.Templates;
 
-using System;
-using System.Reflection;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
 
 public static class StructTemplate
 {
-    public static string Create(Type mainType)
+    public static string Create(INamedTypeSymbol mainType)
     {
         var mainTypeName = mainType.IsGenericType ? mainType.GetBaseTypeNameOfGeneric() : mainType.Name;
 
@@ -37,7 +36,7 @@ public static class StructTemplate
         }
 
         var constructor = mainType.GetInjectableConstructor();
-        var ctorParameters = constructor.GetParameters();
+        var ctorParameters = constructor.Parameters;
         foreach (var parameter in ctorParameters)
         {
             // foreach (var genericType in parameter.ParameterType.GetTypeName().GenericTypes)
@@ -63,9 +62,9 @@ public static class StructTemplate
         return code;
     }
 
-    private static string CreateMethodByCtorParameter(Type mainType, ParameterInfo parameter)
+    private static string CreateMethodByCtorParameter(INamedTypeSymbol mainType, IParameterSymbol parameter)
     {
-        var parameterTypeStr = parameter.ParameterType.GetTypeName();
+        var parameterTypeStr = parameter.Type.GetTypeName();
         var variable = parameter.Name.FirstCharToLower();
         var code = $$"""
                     private {{parameterTypeStr}} {{parameter.Name.FirstCharToUpper()}}(IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)

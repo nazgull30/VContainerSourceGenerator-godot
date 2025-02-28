@@ -1,69 +1,65 @@
-namespace VContainerSourceGenerator.Utils
+namespace VContainerSourceGenerator.Utils;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+
+public static class InjectExtensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-
-    public static class InjectExtensions
+    public static List<IFieldSymbol> GetInjectableFields(this INamedTypeSymbol baseType)
     {
-        public static List<FieldInfo> GetInjectableFields(this Type baseType)
+        var res = new List<IFieldSymbol>();
+        var fields = baseType.GetFields().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        foreach (var fieldInfo in fields)
         {
-            var res = new List<FieldInfo>();
-            var fields = baseType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var fieldInfo in fields)
+            var hasInject = fieldInfo.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+            if (hasInject)
             {
-                var data = fieldInfo.GetCustomAttributesData();
-                var selected = data.Where(x => x.AttributeType.Name == "InjectAttribute").Select(x => x).Count();
-                if (selected > 0)
-                {
-                    res.Add(fieldInfo);
-                }
+                res.Add(fieldInfo);
             }
-            return res;
+        }
+        return res;
+    }
+
+    public static List<IPropertySymbol> GetInjectableProperties(this INamedTypeSymbol baseType)
+    {
+        var res = new List<IPropertySymbol>();
+        var properties = baseType.GetProperties().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        foreach (var propertySymbol in properties)
+        {
+            var hasInject = propertySymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+            if (hasInject)
+            {
+                res.Add(propertySymbol);
+            }
+        }
+        return res;
+    }
+
+    public static List<IMethodSymbol> GetInjectableMethods(this INamedTypeSymbol baseType)
+    {
+        var res = new List<IMethodSymbol>();
+        var methods = baseType.GetMethods().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        foreach (var methodSymbol in methods)
+        {
+            var hasInject = methodSymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+            if (hasInject)
+            {
+                res.Add(methodSymbol);
+            }
+        }
+        return res;
+    }
+
+    public static IMethodSymbol GetInjectableConstructor(this INamedTypeSymbol typeSymbol)
+    {
+        var constructors = typeSymbol.Constructors.Where(c => !c.IsStatic).ToList();
+        if (constructors.Count != 1)
+        {
+            throw new ArgumentException($"Should be only one constructor {typeSymbol.Name}");
         }
 
-        public static List<PropertyInfo> GetInjectableProperties(this Type baseType)
-        {
-            var res = new List<PropertyInfo>();
-            var properties = baseType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var propertyInfo in properties)
-            {
-                var data = propertyInfo.GetCustomAttributesData();
-                var selected = data.Where(x => x.AttributeType.Name == "InjectAttribute").Select(x => x).Count();
-                if (selected > 0)
-                {
-                    res.Add(propertyInfo);
-                }
-            }
-            return res;
-        }
-
-        public static List<MethodInfo> GetInjectableMethods(this Type baseType)
-        {
-            var res = new List<MethodInfo>();
-            var methods = baseType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (var methodInfo in methods)
-            {
-                var data = methodInfo.GetCustomAttributesData();
-                var selected = data.Where(x => x.AttributeType.Name == "InjectAttribute").Select(x => x).Count();
-                if (selected > 0)
-                {
-                    res.Add(methodInfo);
-                }
-            }
-            return res;
-        }
-
-        public static ConstructorInfo GetInjectableConstructor(this Type baseType)
-        {
-            var constructors = baseType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            if (constructors.Length != 1)
-            {
-                throw new ArgumentException($"Should be only one constructor {baseType.Name}");
-            }
-
-            return constructors[0];
-        }
+        return constructors[0];
     }
 }

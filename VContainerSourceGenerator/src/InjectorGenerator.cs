@@ -1,5 +1,6 @@
 namespace VContainerSourceGenerator.World;
 
+using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,25 +28,12 @@ public class InjectorGenerator : IIncrementalGenerator
         foreach (var (ctx, semanticModel) in interfaces)
         {
 
-
-            var typeInfo = semanticModel.GetTypeInfo(ctx).Type;
-            typeInfo.ToDisplayString
-            StructTemplate.Create(type.BaseType);
-
-            var mainy = typeSymbol.Name.Remove(0, 1);
-            var code = $$"""
-
-
-
-using {{interfaceSymbol.ContainingNamespace.ToDisplayString()}};
-
-                         public class {{className}}(Arch.Core.World world) : WorldWrapper(world), {{interfaceSymbol.Name}};
-
-""";
+            var classSymbol = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
+            var code = StructTemplate.Create(classSymbol);
 
             var formattedCode = code.FormatCode();
 
-            context.AddSource($"EcsCodeGen.Worlds/{className}Wrapper.g.cs", formattedCode);
+            context.AddSource($"VContainerSourceGenerator/Injectors/{classSymbol.Name}.g.cs", formattedCode);
         }
 
 

@@ -1,14 +1,13 @@
 namespace VContainerSourceGenerator.Templates;
 
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
 
 public static class InjectMethodsTemplate
 {
-    public static string CreateInjectMethods(Type mainType, List<MethodInfo> methods)
+    public static string CreateInjectMethods(INamedTypeSymbol mainType, List<IMethodSymbol> methods)
     {
         var statements = new StringBuilder();
 
@@ -30,9 +29,9 @@ public static class InjectMethodsTemplate
         return code;
     }
 
-    private static StringBuilder CreateStatementsForOneField(Type mainType, MethodInfo methodInfo)
+    private static StringBuilder CreateStatementsForOneField(INamedTypeSymbol mainType, IMethodSymbol methodInfo)
     {
-        var parameters = methodInfo.GetParameters();
+        var parameters = methodInfo.Parameters;
         var statements = new StringBuilder();
 
         foreach (var parameter in parameters)
@@ -41,12 +40,12 @@ public static class InjectMethodsTemplate
             statements.AppendLine(parameterStatements);
         }
 
-        if (methodInfo.IsPublic)
+        if (methodInfo.DeclaredAccessibility == Accessibility.Public)
         {
             var sb = new StringBuilder();
             foreach (var parameter in parameters)
             {
-                sb.Append($"({parameter.ParameterType.GetTypeName()}){parameter.Name}").Append(',');
+                sb.Append($"({parameter.Type.GetTypeName()}){parameter.Name}").Append(',');
             }
 
             if (parameters.Length > 0)
@@ -66,7 +65,7 @@ public static class InjectMethodsTemplate
             foreach (var parameter in parameters)
             {
                 var variable = parameter.Name.FirstCharToLower();
-                sb.Append($"{variable}").Append(",");
+                sb.Append($"{variable}").Append(',');
             }
 
             if (parameters.Length > 0)
@@ -80,10 +79,10 @@ public static class InjectMethodsTemplate
         return statements;
     }
 
-    private static string CreateStatementsForOneParameter(Type mainType, ParameterInfo parameter)
+    private static string CreateStatementsForOneParameter(INamedTypeSymbol mainType, IParameterSymbol parameter)
     {
         var variable = parameter.Name.FirstCharToLower();
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.ParameterType.GetTypeName()}, \"{parameter.ParameterType.GetTypeName()}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}, \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.Name}));";
         return resolveStr;
     }
 }

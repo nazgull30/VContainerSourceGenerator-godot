@@ -2,6 +2,8 @@ namespace VContainerSourceGenerator.Utils;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -57,18 +59,24 @@ public static class Extensions
         return formattedRoot.ToFullString();
     }
 
-    public static string GetBaseTypeNameOfGeneric(this Type type)
+    public static string GetBaseTypeNameOfGeneric(this INamedTypeSymbol type)
     {
         return type.Name[..^2];
     }
 
-    public static TypeName GetTypeName(this Type type)
+    public static TypeName GetTypeName(this ITypeSymbol type)
+    {
+        var named = type as INamedTypeSymbol;
+        return GetTypeName(named);
+    }
+
+    public static TypeName GetTypeName(this INamedTypeSymbol type)
     {
         string parameterTypeStr;
-        var isNested = type.IsNested;
+        var isNested = type.ContainingType != null;
         if (isNested)
         {
-            parameterTypeStr = $"{type.DeclaringType.Name}.{type.Name}";
+            parameterTypeStr = $"{type.ContainingType.Name}.{type.Name}";
         }
         else
         {
@@ -78,16 +86,16 @@ public static class Extensions
                 : typeName;
         }
 
-        var genericTypes = type.IsGenericType ? type.GetGenericArguments() : Type.EmptyTypes;
+        var genericTypes = type.IsGenericType ? type.TypeParameters : [];
         return new TypeName(parameterTypeStr, genericTypes);
     }
 
-    private static string GetGenericTypeName(Type type)
+    private static string GetGenericTypeName(INamedTypeSymbol type)
     {
         var sb = new StringBuilder();
         var baseName = type.GetBaseTypeNameOfGeneric();
         sb.Append(baseName).Append('<');
-        var genericArgs = type.GetGenericArguments();
+        var genericArgs = type.TypeParameters;
         foreach (var arg in genericArgs)
         {
             sb.Append(arg.Name).Append(',');
@@ -100,35 +108,35 @@ public static class Extensions
         return sb.ToString();
     }
 
-    public static bool IsPrimitiveType(this Type type) => _universalTypes.ContainsKey(type.Name);
+    public static bool IsPrimitiveType(this ITypeSymbol type) => type.SpecialType.IsPrimitiveType();
 
-    public static string ConvertToPrimitive(this Type type) => _universalTypes[type.Name];
+    public static string ConvertToPrimitive(this ITypeSymbol type) => _universalTypes[type.SpecialType];
 
-    private static readonly Dictionary<string, string> _universalTypes = new()
+    private static readonly Dictionary<SpecialType, string> _universalTypes = new()
         {
-            {"SByte", "sbyte"},
-            {"Byte", "byte"},
-            {"Int16", "short"},
-            {"UInt16", "ushort"},
-            {"Int32", "int"},
-            {"UInt32", "uint"},
-            {"Int64", "long"},
-            {"UInt64", "ulong"},
-            {"Single", "float"},
-            {"Double", "double"},
-            {"Boolean", "bool"},
-            {"Char", "char"},
-            {"String", "string"},
-            {"Object", "object"},
-            {"Void", "void"}
+            {SpecialType.System_SByte, "sbyte"},
+            {SpecialType.System_Byte, "byte"},
+            {SpecialType.System_Int16, "short"},
+            {SpecialType.System_UInt16, "ushort"},
+            {SpecialType.System_Int32, "int"},
+            {SpecialType.System_UInt32, "uint"},
+            {SpecialType.System_Int64, "long"},
+            {SpecialType.System_UInt64, "ulong"},
+            {SpecialType.System_Single, "float"},
+            {SpecialType.System_Double, "double"},
+            {SpecialType.System_Boolean, "bool"},
+            {SpecialType.System_Char, "char"},
+            {SpecialType.System_String, "string"},
+            {SpecialType.System_Object, "object"},
+            {SpecialType.System_Void, "void"}
         };
 
     public readonly struct TypeName
     {
         public readonly string Name;
-        public readonly Type[] GenericTypes;
+        public readonly ImmutableArray<ITypeParameterSymbol> GenericTypes;
 
-        public TypeName(string name, Type[] genericTypes)
+        public TypeName(string name, ImmutableArray<ITypeParameterSymbol> genericTypes)
         {
             Name = name;
             GenericTypes = genericTypes;
@@ -138,5 +146,31 @@ public static class Extensions
         {
             return Name;
         }
+    }
+
+    public static bool IsPrimitiveType(this SpecialType specialType)
+    {
+        return specialType is >= SpecialType.System_Boolean and <= SpecialType.System_UInt64;
+    }
+
+    public static List<IFieldSymbol> GetFields(this INamedTypeSymbol type)
+    {
+        return [.. type.GetMembers()
+            .OfType<IFieldSymbol>()
+            .Where(f => !f.IsImplicitlyDeclared)];
+    }
+
+    public static List<IPropertySymbol> GetProperties(this INamedTypeSymbol type)
+    {
+        return [.. type.GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(f => !f.IsImplicitlyDeclared)];
+    }
+
+    public static List<IMethodSymbol> GetMethods(this INamedTypeSymbol type)
+    {
+        return [.. type.GetMembers()
+            .OfType<IMethodSymbol>()
+            .Where(f => !f.IsImplicitlyDeclared)];
     }
 }

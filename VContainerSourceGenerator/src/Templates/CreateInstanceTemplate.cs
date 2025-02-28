@@ -1,15 +1,16 @@
 namespace VContainerSourceGenerator.Templates;
 
-using System;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
 
 public static class CreateInstanceTemplate
 {
-    public static string CreateInstance(Type mainType)
+    public static string CreateInstance(INamedTypeSymbol mainType)
     {
+
         var constructor = mainType.GetInjectableConstructor();
-        var ctorParams = constructor.GetParameters();
+        var ctorParams = constructor.Parameters;
 
         var statements = new StringBuilder();
         var ctorParamsSb = new StringBuilder();

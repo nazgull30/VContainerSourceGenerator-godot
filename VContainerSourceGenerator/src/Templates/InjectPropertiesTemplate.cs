@@ -1,14 +1,12 @@
 namespace VContainerSourceGenerator.Templates;
-
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
+using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
 
 public static class InjectPropertiesTemplate
 {
-    public static string CreateProperties(Type mainType, List<PropertyInfo> properties)
+    public static string CreateProperties(INamedTypeSymbol mainType, List<IPropertySymbol> properties)
     {
         var statements = new StringBuilder();
         foreach (var propertyInfo in properties)
@@ -29,18 +27,17 @@ public static class InjectPropertiesTemplate
         return code;
     }
 
-    private static StringBuilder CreateStatementsForOneProperty(Type mainType, PropertyInfo propertyInfo)
+    private static StringBuilder CreateStatementsForOneProperty(INamedTypeSymbol mainType, IPropertySymbol propertyInfo)
     {
         var variable = propertyInfo.Name.FirstCharToLower();
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({propertyInfo.PropertyType.GetTypeName()}), \"{propertyInfo.Name}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({propertyInfo.Type.GetTypeName()}), \"{propertyInfo.Name}\", parameters, typeof({mainType.Name}));";
         var statements = new StringBuilder();
 
         statements.AppendLine(resolveStr);
 
-        var setMethod = propertyInfo.GetSetMethod();
-        if (setMethod != null)
+        if (propertyInfo.SetMethod != null)
         {
-            statements.AppendLine($"{mainType.Name.FirstCharToLower()}.{propertyInfo.Name} = ({propertyInfo.PropertyType.GetTypeName()}){variable};");
+            statements.AppendLine($"{mainType.Name.FirstCharToLower()}.{propertyInfo.Name} = ({propertyInfo.Type.GetTypeName()}){variable};");
         }
         else
         {
