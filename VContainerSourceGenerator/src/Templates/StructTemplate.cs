@@ -1,5 +1,4 @@
 namespace VContainerSourceGenerator.Templates;
-
 using System.Text;
 using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
@@ -17,26 +16,30 @@ public static class StructTemplate
         var injectInfo = InjectTemplate.Create(fields.Count, properties.Count, methods.Count);
         var createInstanceInfo = CreateInstanceTemplate.CreateInstance(mainType);
 
-        var statements = new StringBuilder();
-
+        var injectFieldsInfo = "";
         if (fields.Count > 0)
         {
-            var injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields);
-            statements.Append(injectFieldsInfo);
+            injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields);
         }
+
+        var injectPropertiesInfo = "";
         if (properties.Count > 0)
         {
-            var injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties);
-            statements.Append(injectPropertiesInfo);
+            injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties);
         }
+
+        var injectMethodsInfo = "";
         if (methods.Count > 0)
         {
-            var injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods);
-            statements.Append(injectMethodsInfo);
+            injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods);
         }
 
         var constructor = mainType.GetInjectableConstructor();
         var ctorParameters = constructor.Parameters;
+        var sb = new StringBuilder();
+        // ctorParameters.ToList().ForEach(p => sb.AppendLine(p.Name + ": " + p.Type.Name));
+        // File.WriteAllText($"{mainType.Name}.txt", sb.ToString());
+        var ctorParametersSb = new StringBuilder();
         foreach (var parameter in ctorParameters)
         {
             // foreach (var genericType in parameter.ParameterType.GetTypeName().GenericTypes)
@@ -45,7 +48,7 @@ public static class StructTemplate
             // }
 
             var parameterGetter = CreateMethodByCtorParameter(mainType, parameter);
-            statements.Append(parameterGetter);
+            ctorParametersSb.AppendLine(parameterGetter);
             // if (parameterGetter.UsingDirective != null)
             // {
             //     usingDirectives.Add(parameterGetter.UsingDirective);
@@ -53,10 +56,24 @@ public static class StructTemplate
         }
 
         var code = $$"""
-                    public void Inject(object instance, IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
-                    {
-                        {{statements}}
-                    }
+using System;
+using System.Collections.Generic;
+using VContainer;
+
+public readonly struct EnemyFactoryInjector : IInjector
+{
+    {{injectInfo}}
+
+    {{createInstanceInfo}}
+
+    {{injectFieldsInfo}}
+
+    {{injectPropertiesInfo}}
+
+    {{injectMethodsInfo}}
+
+    {{ctorParametersSb}}
+}
 """;
 
         return code;
@@ -67,10 +84,10 @@ public static class StructTemplate
         var parameterTypeStr = parameter.Type.GetTypeName();
         var variable = parameter.Name.FirstCharToLower();
         var code = $$"""
-                    private {{parameterTypeStr}} {{parameter.Name.FirstCharToUpper()}}(IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
+                    private {{parameterTypeStr}} Get{{parameter.Name.FirstCharToUpper()}}(IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
                     {
                         var {{variable}} = ({{parameterTypeStr}})objResolver.ResolveOrParameter(typeof ({{parameterTypeStr}}), "{{parameterTypeStr}}", parameters, typeof ({{mainType.GetTypeName()}}));
-                        return {{variable}}
+                        return {{variable}};
                     }
 """;
         return code;

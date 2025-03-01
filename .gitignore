@@ -2,6 +2,7 @@
 !**/coverage/.gdignore
 nupkg/
 .godot/
+.idea/
 bin/
 obj/
 .generated/

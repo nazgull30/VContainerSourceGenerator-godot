@@ -105,25 +105,25 @@ public static class Extensions
 
     public static bool IsPrimitiveType(this ITypeSymbol type) => type.SpecialType.IsPrimitiveType();
 
-    public static string ConvertToPrimitive(this ITypeSymbol type) => _universalTypes[type.SpecialType];
+    public static string ConvertToPrimitive(this ITypeSymbol type) => _universalTypes[type.Name];
 
-    private static readonly Dictionary<SpecialType, string> _universalTypes = new()
+    private static readonly Dictionary<string, string> _universalTypes = new()
         {
-            {SpecialType.System_SByte, "sbyte"},
-            {SpecialType.System_Byte, "byte"},
-            {SpecialType.System_Int16, "short"},
-            {SpecialType.System_UInt16, "ushort"},
-            {SpecialType.System_Int32, "int"},
-            {SpecialType.System_UInt32, "uint"},
-            {SpecialType.System_Int64, "long"},
-            {SpecialType.System_UInt64, "ulong"},
-            {SpecialType.System_Single, "float"},
-            {SpecialType.System_Double, "double"},
-            {SpecialType.System_Boolean, "bool"},
-            {SpecialType.System_Char, "char"},
-            {SpecialType.System_String, "string"},
-            {SpecialType.System_Object, "object"},
-            {SpecialType.System_Void, "void"}
+            {"SByte", "sbyte"},
+            {"Byte", "byte"},
+            {"Int16", "short"},
+            {"UInt16", "ushort"},
+            {"Int32", "int"},
+            {"UInt32", "uint"},
+            {"Int64", "long"},
+            {"UInt64", "ulong"},
+            {"Single", "float"},
+            {"Double", "double"},
+            {"Boolean", "bool"},
+            {"Char", "char"},
+            {"String", "string"},
+            {"Object", "object"},
+            {"Void", "void"}
         };
 
     public readonly struct TypeName

@@ -1,4 +1,4 @@
-namespace VContainerSourceGenerator.World;
+namespace VContainerSourceGenerator;
 
 using System;
 using System.Collections.Immutable;
@@ -12,30 +12,28 @@ public class InjectorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var interfaceDeclarations = context.SyntaxProvider
+        var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: (node, _) => node is TypeDeclarationSyntax,
-                transform: (context, _) => (context.Node as TypeDeclarationSyntax, context.SemanticModel))
-            .Where(pair => Utilities.HasAttribute("VContainer.GenerateInjectorAttribute", pair.Item1, pair.Item2))
+                predicate: (node, _) => node is ClassDeclarationSyntax,
+                transform: (context, _) => (context.Node as ClassDeclarationSyntax, context.SemanticModel))
+            .Where(pair => Utilities.HasAttribute("GenerateInjectorAttribute", pair.Item1, pair.Item2))
             .Collect();
 
-        context.RegisterSourceOutput(interfaceDeclarations, GenerateCode);
+        context.RegisterSourceOutput(classDeclarations, GenerateCode);
     }
 
     private void GenerateCode(SourceProductionContext context,
-        ImmutableArray<(TypeDeclarationSyntax, SemanticModel)> interfaces)
+        ImmutableArray<(ClassDeclarationSyntax, SemanticModel)> classes)
     {
-        foreach (var (ctx, semanticModel) in interfaces)
+        foreach (var (ctx, semanticModel) in classes)
         {
-
             var classSymbol = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
+
             var code = StructTemplate.Create(classSymbol);
 
             var formattedCode = code.FormatCode();
 
             context.AddSource($"VContainerSourceGenerator/Injectors/{classSymbol.Name}.g.cs", formattedCode);
         }
-
-
     }
 }
