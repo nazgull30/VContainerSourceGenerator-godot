@@ -1,5 +1,6 @@
 namespace VContainerSourceGenerator.Templates;
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -7,8 +8,9 @@ using VContainerSourceGenerator.Utils;
 
 public static class InjectMethodsTemplate
 {
-    public static string CreateInjectMethods(INamedTypeSymbol mainType, List<IMethodSymbol> methods)
+    public static string CreateInjectMethods(INamedTypeSymbol mainType, List<IMethodSymbol> methods, Action<string> addUsing)
     {
+        AddUsings(methods, addUsing);
         var statements = new StringBuilder();
 
         foreach (var methodInfo in methods)
@@ -84,5 +86,22 @@ public static class InjectMethodsTemplate
         var variable = parameter.Name.FirstCharToLower();
         var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}, \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.Name}));";
         return resolveStr;
+    }
+
+    private static void AddUsings(List<IMethodSymbol> methods, Action<string> addUsing)
+    {
+        foreach (var method in methods)
+        {
+            foreach (var parameter in method.Parameters)
+            {
+                addUsing(parameter.ContainingNamespace.ToDisplayString());
+                var paramTypeName = parameter.Type.GetTypeName();
+                foreach (var geneticType in paramTypeName.GenericTypes)
+                {
+                    addUsing(geneticType.ContainingNamespace.ToDisplayString());
+                }
+            }
+            addUsing(method.ReturnType.ContainingNamespace.ToDisplayString());
+        }
     }
 }

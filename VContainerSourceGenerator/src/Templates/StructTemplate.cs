@@ -1,4 +1,7 @@
 namespace VContainerSourceGenerator.Templates;
+
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
@@ -7,6 +10,8 @@ public static class StructTemplate
 {
     public static string Create(INamedTypeSymbol mainType)
     {
+        var usings = new List<string>();
+
         var mainTypeName = mainType.IsGenericType ? mainType.GetBaseTypeNameOfGeneric() : mainType.Name;
 
         var fields = mainType.GetInjectableFields();
@@ -14,24 +19,24 @@ public static class StructTemplate
         var methods = mainType.GetInjectableMethods();
 
         var injectInfo = InjectTemplate.Create(fields.Count, properties.Count, methods.Count);
-        var createInstanceInfo = CreateInstanceTemplate.CreateInstance(mainType);
+        var createInstanceInfo = CreateInstanceTemplate.CreateInstance(mainType, usings.Add);
 
         var injectFieldsInfo = "";
         if (fields.Count > 0)
         {
-            injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields);
+            injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields, usings.Add);
         }
 
         var injectPropertiesInfo = "";
         if (properties.Count > 0)
         {
-            injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties);
+            injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties, usings.Add);
         }
 
         var injectMethodsInfo = "";
         if (methods.Count > 0)
         {
-            injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods);
+            injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods, usings.Add);
         }
 
         var constructor = mainType.GetInjectableConstructor();
@@ -42,23 +47,25 @@ public static class StructTemplate
         var ctorParametersSb = new StringBuilder();
         foreach (var parameter in ctorParameters)
         {
-            // foreach (var genericType in parameter.ParameterType.GetTypeName().GenericTypes)
-            // {
-            //     usingDirectives.AddUsingDirective(genericType.Namespace);
-            // }
-
             var parameterGetter = CreateMethodByCtorParameter(mainType, parameter);
             ctorParametersSb.AppendLine(parameterGetter);
-            // if (parameterGetter.UsingDirective != null)
-            // {
-            //     usingDirectives.Add(parameterGetter.UsingDirective);
-            // }
         }
+
+        var usingsSb = new StringBuilder();
+        var distinctUsings = usings.Distinct();
+        foreach (var u in distinctUsings)
+        {
+            usingsSb.AppendLine($"using {u};");
+        }
+
+        var usingsStr = usingsSb.ToString();
 
         var code = $$"""
 using System;
 using System.Collections.Generic;
 using VContainer;
+
+{{usingsStr}}
 
 public readonly struct EnemyFactoryInjector : IInjector
 {

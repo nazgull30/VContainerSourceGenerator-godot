@@ -1,14 +1,15 @@
 namespace VContainerSourceGenerator.Templates;
 
+using System;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using VContainerSourceGenerator.Utils;
 
 public static class CreateInstanceTemplate
 {
-    public static string CreateInstance(INamedTypeSymbol mainType)
+    public static string CreateInstance(INamedTypeSymbol mainType, Action<string> addUsing)
     {
-
+        AddUsings(mainType, addUsing);
         var constructor = mainType.GetInjectableConstructor();
         var ctorParams = constructor.Parameters;
 
@@ -48,5 +49,21 @@ public static class CreateInstanceTemplate
 """;
 
         return code;
+    }
+
+    private static void AddUsings(INamedTypeSymbol mainType, Action<string> addUsing)
+    {
+        addUsing(mainType.ContainingNamespace.ToDisplayString());
+        var typeName = mainType.GetTypeName();
+        foreach (var geneticType in typeName.GenericTypes)
+        {
+            addUsing(geneticType.ContainingNamespace.ToDisplayString());
+        }
+        var ctor = mainType.GetInjectableConstructor();
+        var ctorParams = ctor.Parameters;
+        foreach (var parameter in ctorParams)
+        {
+            addUsing(parameter.ContainingNamespace.ToDisplayString());
+        }
     }
 }

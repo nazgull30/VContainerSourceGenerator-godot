@@ -1,4 +1,6 @@
 namespace VContainerSourceGenerator.Templates;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -6,8 +8,9 @@ using VContainerSourceGenerator.Utils;
 
 public static class InjectFieldsTemplate
 {
-    public static string CreateInjectFields(INamedTypeSymbol mainType, List<IFieldSymbol> fields)
+    public static string CreateInjectFields(INamedTypeSymbol mainType, List<IFieldSymbol> fields, Action<string> addUsing)
     {
+        AddUsings(fields, addUsing);
         var statements = new StringBuilder();
 
         foreach (var fieldInfo in fields)
@@ -46,5 +49,18 @@ public static class InjectFieldsTemplate
         }
 
         return statements;
+    }
+
+    private static void AddUsings(List<IFieldSymbol> fields, Action<string> addUsing)
+    {
+        foreach (var field in fields)
+        {
+            addUsing(field.ContainingNamespace.ToDisplayString());
+            var typeName = field.Type.GetTypeName();
+            foreach (var geneticType in typeName.GenericTypes)
+            {
+                addUsing(geneticType.ContainingNamespace.ToDisplayString());
+            }
+        }
     }
 }

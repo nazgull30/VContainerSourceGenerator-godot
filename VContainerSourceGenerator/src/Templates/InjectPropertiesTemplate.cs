@@ -1,4 +1,6 @@
 namespace VContainerSourceGenerator.Templates;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -6,8 +8,9 @@ using VContainerSourceGenerator.Utils;
 
 public static class InjectPropertiesTemplate
 {
-    public static string CreateProperties(INamedTypeSymbol mainType, List<IPropertySymbol> properties)
+    public static string CreateProperties(INamedTypeSymbol mainType, List<IPropertySymbol> properties, Action<string> addUsing)
     {
+        AddUsings(properties, addUsing);
         var statements = new StringBuilder();
         foreach (var propertyInfo in properties)
         {
@@ -45,5 +48,18 @@ public static class InjectPropertiesTemplate
         }
 
         return statements;
+    }
+
+    private static void AddUsings(List<IPropertySymbol> propertySymbols, Action<string> addUsing)
+    {
+        foreach (var propertySymbol in propertySymbols)
+        {
+            addUsing(propertySymbol.ContainingNamespace.ToDisplayString());
+            var typeName = propertySymbol.Type.GetTypeName();
+            foreach (var geneticType in typeName.GenericTypes)
+            {
+                addUsing(geneticType.ContainingNamespace.ToDisplayString());
+            }
+        }
     }
 }
