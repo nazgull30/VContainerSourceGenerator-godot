@@ -4,17 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 public static class Extensions
 {
-    public static bool HasAttribute<T>(this MemberInfo type)
-        where T : Attribute
-        => type.GetCustomAttribute<T>() != null;
-
     public static string FirstCharToLower(this string source) =>
         string.Concat(source[..1].ToLowerInvariant(), source.AsSpan(1));
 

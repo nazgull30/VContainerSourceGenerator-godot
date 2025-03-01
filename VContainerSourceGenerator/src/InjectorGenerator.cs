@@ -16,7 +16,7 @@ public class InjectorGenerator : IIncrementalGenerator
             .CreateSyntaxProvider(
                 predicate: (node, _) => node is TypeDeclarationSyntax,
                 transform: (context, _) => (context.Node as TypeDeclarationSyntax, context.SemanticModel))
-            .Where(pair => Utilities.HasAttribute("PdArchEcsCore.Attributes.Generate", pair.Item1, pair.Item2))
+            .Where(pair => Utilities.HasAttribute("VContainer.GenerateInjectorAttribute", pair.Item1, pair.Item2))
             .Collect();
 
         context.RegisterSourceOutput(interfaceDeclarations, GenerateCode);
