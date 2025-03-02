@@ -4,14 +4,16 @@ using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using VContainerSourceGenerator.Templates;
-using VContainerSourceGenerator.Utils;
+using Templates;
+using Utils;
 
 [Generator]
 public class InjectorGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+
+
         var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: (node, _) => node is ClassDeclarationSyntax,

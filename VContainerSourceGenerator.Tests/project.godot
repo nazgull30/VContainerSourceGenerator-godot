@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="VContainerSourceGenerator.Tests"
-run/main_scene="res://test/Tests.tscn"
+run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.3", "C#", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Root="*res://Root.tscn"
 
 [dotnet]
 

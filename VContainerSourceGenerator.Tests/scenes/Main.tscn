@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://c31t1upsvo68x"]
+
+[ext_resource type="Script" path="res://addons/VContainer/Unity/LifetimeScope.cs" id="1_ssq1m"]
+[ext_resource type="Script" path="res://Src/TestInstaller.cs" id="2_2junu"]
+[ext_resource type="Script" path="res://Src/EntryPoint.cs" id="3_n2gct"]
+
+[node name="Main" type="Node2D" node_paths=PackedStringArray("_monoInstallers", "autoInjectGameObjects")]
+script = ExtResource("1_ssq1m")
+_scriptableObjectInstallers = Array[Resource]([])
+_monoInstallers = Array[Resource]([])
+autoInjectGameObjects = [NodePath("EntryPoint")]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("2_2junu")
+
+[node name="EntryPoint" type="Node" parent="."]
+script = ExtResource("3_n2gct")

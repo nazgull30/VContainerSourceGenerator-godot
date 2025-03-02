@@ -1,16 +1,22 @@
 namespace VContainerSourceGenerator.Tests.Src;
 
+using Godot;
 using VContainer;
 
 [GenerateInjector]
 public class TestClass
 {
-    private readonly int _i;
-
-    public TestClass(int i)
+    public TestClass(FirstClass firstClass, SecondClass secondClass)
     {
-        _i = i;
+        FirstClass = firstClass;
+        SecondClass = secondClass;
     }
 
-    public int I { get; set; }
+    public FirstClass FirstClass { get; }
+    public SecondClass SecondClass { get; }
+
+    public void Print()
+    {
+        GD.Print(FirstClass.GetHashCode(), SecondClass.GetHashCode());
+    }
 }

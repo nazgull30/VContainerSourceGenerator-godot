@@ -12,8 +12,6 @@ public static class StructTemplate
     {
         var usings = new List<string>();
 
-        var mainTypeName = mainType.IsGenericType ? mainType.GetBaseTypeNameOfGeneric() : mainType.Name;
-
         var fields = mainType.GetInjectableFields();
         var properties = mainType.GetInjectableProperties();
         var methods = mainType.GetInjectableMethods();
@@ -61,13 +59,14 @@ public static class StructTemplate
         var usingsStr = usingsSb.ToString();
 
         var code = $$"""
-using System;
+namespace VContainer.Injectors;
+
 using System.Collections.Generic;
 using VContainer;
 
 {{usingsStr}}
 
-public readonly struct EnemyFactoryInjector : IInjector
+public readonly struct {{mainType.Name}}Injector : IInjector
 {
     {{injectInfo}}
 

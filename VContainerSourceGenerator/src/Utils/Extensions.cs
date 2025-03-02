@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 public static class Extensions
 {
@@ -54,11 +55,6 @@ public static class Extensions
         return formattedRoot.ToFullString();
     }
 
-    public static string GetBaseTypeNameOfGeneric(this INamedTypeSymbol type)
-    {
-        return type.Name[..^2];
-    }
-
     public static TypeName GetTypeName(this ITypeSymbol type)
     {
         var named = type as INamedTypeSymbol;
@@ -75,7 +71,7 @@ public static class Extensions
         }
         else
         {
-            var typeName = type.IsGenericType ? GetGenericTypeName(type) : type.Name;
+            var typeName = type.IsGenericType && !type.IsUnboundGenericType ? GetGenericTypeName(type) : type.Name;
             parameterTypeStr = type.IsPrimitiveType()
                 ? type.ConvertToPrimitive()
                 : typeName;
@@ -85,12 +81,13 @@ public static class Extensions
         return new TypeName(parameterTypeStr, genericTypes);
     }
 
+
     private static string GetGenericTypeName(INamedTypeSymbol type)
     {
         var sb = new StringBuilder();
-        var baseName = type.GetBaseTypeNameOfGeneric();
+        var baseName = type.Name;
         sb.Append(baseName).Append('<');
-        var genericArgs = type.TypeParameters;
+        var genericArgs = type.TypeArguments;
         foreach (var arg in genericArgs)
         {
             sb.Append(arg.Name).Append(',');
@@ -105,26 +102,45 @@ public static class Extensions
 
     public static bool IsPrimitiveType(this ITypeSymbol type) => type.SpecialType.IsPrimitiveType();
 
-    public static string ConvertToPrimitive(this ITypeSymbol type) => _universalTypes[type.Name];
+    public static string ConvertToPrimitive(this ITypeSymbol type) => _universalTypes[type.SpecialType];
 
-    private static readonly Dictionary<string, string> _universalTypes = new()
+    private static readonly Dictionary<SpecialType, string> _universalTypes = new()
         {
-            {"SByte", "sbyte"},
-            {"Byte", "byte"},
-            {"Int16", "short"},
-            {"UInt16", "ushort"},
-            {"Int32", "int"},
-            {"UInt32", "uint"},
-            {"Int64", "long"},
-            {"UInt64", "ulong"},
-            {"Single", "float"},
-            {"Double", "double"},
-            {"Boolean", "bool"},
-            {"Char", "char"},
-            {"String", "string"},
-            {"Object", "object"},
-            {"Void", "void"}
+            {SpecialType.System_SByte, "sbyte"},
+            {SpecialType.System_Byte, "byte"},
+            {SpecialType.System_Int16, "short"},
+            {SpecialType.System_UInt16, "ushort"},
+            {SpecialType.System_Int32, "int"},
+            {SpecialType.System_UInt32, "uint"},
+            {SpecialType.System_Int64, "long"},
+            {SpecialType.System_UInt64, "ulong"},
+            {SpecialType.System_Single, "float"},
+            {SpecialType.System_Double, "double"},
+            {SpecialType.System_Boolean, "bool"},
+            {SpecialType.System_Char, "char"},
+            {SpecialType.System_String, "string"},
+            {SpecialType.System_Object, "object"},
+            {SpecialType.System_Void, "void"}
         };
+
+    // private static readonly Dictionary<string, string> _universalTypes = new()
+    //     {
+    //         {"SByte", "sbyte"},
+    //         {"Byte", "byte"},
+    //         {"Int16", "short"},
+    //         {"UInt16", "ushort"},
+    //         {"Int32", "int"},
+    //         {"UInt32", "uint"},
+    //         {"Int64", "long"},
+    //         {"UInt64", "ulong"},
+    //         {"Single", "float"},
+    //         {"Double", "double"},
+    //         {"Boolean", "bool"},
+    //         {"Char", "char"},
+    //         {"String", "string"},
+    //         {"Object", "object"},
+    //         {"Void", "void"}
+    //     };
 
     public readonly struct TypeName
     {
@@ -145,7 +161,7 @@ public static class Extensions
 
     public static bool IsPrimitiveType(this SpecialType specialType)
     {
-        return specialType is >= SpecialType.System_Boolean and <= SpecialType.System_UInt64;
+        return specialType is >= SpecialType.System_Boolean and <= SpecialType.System_String;
     }
 
     public static List<IFieldSymbol> GetFields(this INamedTypeSymbol type)

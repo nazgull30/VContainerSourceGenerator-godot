@@ -28,7 +28,7 @@ public static class CreateInstanceTemplate
             ctorParamsSb.Remove(ctorParamsSb.Length - 1, 1);
         }
 
-        var mainTypeName = mainType.IsGenericType ? mainType.GetBaseTypeNameOfGeneric() : mainType.GetTypeName().Name;
+        var mainTypeName = mainType.GetTypeName().Name;
         var createInstanceStr = $"var instance = new {mainType.GetTypeName()}({ctorParamsSb});";
         statements.AppendLine(createInstanceStr);
         statements.AppendLine("Inject(instance, objResolver, parameters);");
