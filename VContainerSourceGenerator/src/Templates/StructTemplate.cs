@@ -88,14 +88,18 @@ public readonly struct {{mainType.Name}}Injector : IInjector
 
     private static string CreateMethodByCtorParameter(INamedTypeSymbol mainType, IParameterSymbol parameter, Action<string> addUsing)
     {
+        var typeName = parameter.Type.GetTypeName();
+        foreach (var geneticType in typeName.GenericTypes)
+        {
+            addUsing(geneticType.ContainingNamespace.ToDisplayString());
+        }
         addUsing(parameter.ContainingNamespace.ToDisplayString());
         addUsing(parameter.Type.ContainingNamespace.ToDisplayString());
-        var parameterTypeStr = parameter.Type.GetTypeName();
         var variable = parameter.Name.FirstCharToLower();
         var code = $$"""
-                    private {{parameterTypeStr}} Get{{parameter.Name.FirstCharToUpper()}}(IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
+                    private {{typeName}} Get{{parameter.Name.FirstCharToUpper()}}(IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
                     {
-                        var {{variable}} = ({{parameterTypeStr}})objResolver.ResolveOrParameter(typeof ({{parameterTypeStr}}), "{{parameterTypeStr}}", parameters, typeof ({{mainType.GetTypeName()}}));
+                        var {{variable}} = ({{typeName}})objResolver.ResolveOrParameter(typeof ({{typeName}}), "{{typeName}}", parameters, typeof ({{mainType.GetTypeName()}}));
                         return {{variable}};
                     }
 """;

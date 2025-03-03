@@ -27,6 +27,7 @@ public class InjectorGenerator : IIncrementalGenerator
     private void GenerateCode(SourceProductionContext context,
         ImmutableArray<(ClassDeclarationSyntax, SemanticModel)> classes)
     {
+        Logger.Context = context;
         INamedTypeSymbol collector = null;
         foreach (var (ctx, semanticModel) in classes)
         {
@@ -53,6 +54,7 @@ public class InjectorGenerator : IIncrementalGenerator
         {
             var classSymbol = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
             var shouldGenerateInjector = Utilities.HasAttribute(classSymbol, "GenerateInjectorAttribute");
+
             if (shouldGenerateInjector)
             {
                 GenerateCode(context, classSymbol);

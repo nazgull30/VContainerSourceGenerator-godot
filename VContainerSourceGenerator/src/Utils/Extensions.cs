@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 public static class Extensions
 {
@@ -77,7 +76,7 @@ public static class Extensions
                 : typeName;
         }
 
-        var genericTypes = type.IsGenericType ? type.TypeParameters : [];
+        var genericTypes = type.IsGenericType ? type.TypeArguments : [];
         return new TypeName(parameterTypeStr, genericTypes);
     }
 
@@ -145,9 +144,9 @@ public static class Extensions
     public readonly struct TypeName
     {
         public readonly string Name;
-        public readonly ImmutableArray<ITypeParameterSymbol> GenericTypes;
+        public readonly ImmutableArray<ITypeSymbol> GenericTypes;
 
-        public TypeName(string name, ImmutableArray<ITypeParameterSymbol> genericTypes)
+        public TypeName(string name, ImmutableArray<ITypeSymbol> genericTypes)
         {
             Name = name;
             GenericTypes = genericTypes;

@@ -1,4 +1,4 @@
-namespace VContainerSourceGenerator.Tests.Src.Models;
+namespace VContainerSourceGenerator.Tests.Src.Models.Test;
 
 using Godot;
 using VContainer;

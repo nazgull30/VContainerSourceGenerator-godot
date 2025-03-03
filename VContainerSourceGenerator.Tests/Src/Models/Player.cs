@@ -1,6 +1,7 @@
 namespace VContainerSourceGenerator.Tests.Src.Models;
 
 using VContainer;
+using VContainerSourceGenerator.Tests.Src.Models.Test;
 
 // [GenerateInjector]
 public class Player : IMyInterface

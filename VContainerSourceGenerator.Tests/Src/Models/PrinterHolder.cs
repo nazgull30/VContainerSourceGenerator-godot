@@ -3,6 +3,7 @@ namespace VContainerSourceGenerator.Tests.Src.Models;
 using System.Collections.Generic;
 using Godot;
 using VContainer;
+using VContainerSourceGenerator.Tests.Src.Models.Test;
 
 [GenerateInjector]
 public class PrinterHolder
