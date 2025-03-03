@@ -31,17 +31,16 @@ public class InjectorRepoGenerator : IIncrementalGenerator
 
         foreach (var (ctx, semanticModel) in classes)
         {
-            var collector = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
-            var isCollector = Utilities.HasAttribute(collector, "ExternalTypeRetrieverAttribute");
-            if (isCollector)
+            var retriever = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
+            var isRetriever = Utilities.HasAttribute(retriever, "ExternalTypeRetrieverAttribute");
+            if (isRetriever)
             {
-                var fields = collector.GetFields();
+                var fields = retriever.GetFields();
                 foreach (var field in fields)
                 {
                     var classSymbol = field.Type as INamedTypeSymbol;
                     symbols.Add(classSymbol);
                 }
-                break;
             }
         }
 

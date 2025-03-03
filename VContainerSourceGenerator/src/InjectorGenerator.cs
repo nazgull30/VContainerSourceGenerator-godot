@@ -28,25 +28,18 @@ public class InjectorGenerator : IIncrementalGenerator
         ImmutableArray<(ClassDeclarationSyntax, SemanticModel)> classes)
     {
         Logger.Context = context;
-        INamedTypeSymbol collector = null;
         foreach (var (ctx, semanticModel) in classes)
         {
-            var classSymbol = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
-            var isCollector = Utilities.HasAttribute(classSymbol, "ExternalTypeRetrieverAttribute");
-            if (isCollector)
+            var retriever = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
+            var isRetriever = Utilities.HasAttribute(retriever, "ExternalTypeRetrieverAttribute");
+            if (isRetriever)
             {
-                collector = classSymbol;
-                break;
-            }
-        }
-
-        if (collector != null)
-        {
-            var fields = collector.GetFields();
-            foreach (var field in fields)
-            {
-                var classSymbol = field.Type as INamedTypeSymbol;
-                GenerateCode(context, classSymbol);
+                var fields = retriever.GetFields();
+                foreach (var field in fields)
+                {
+                    var classSymbol = field.Type as INamedTypeSymbol;
+                    GenerateCode(context, classSymbol);
+                }
             }
         }
 
