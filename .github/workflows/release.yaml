@@ -44,7 +44,7 @@ jobs:
         id: current-version
         uses: WyriHaximus/github-action-get-previous-tag@v1
         with:
-          fallback: "1.0.2"
+          fallback: "1.0.1"
 
       - name: 🖨 Print Current Version
         run: |
@@ -68,7 +68,7 @@ jobs:
       - name: 📝 Write Version to File
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "2"
+          find: "1.0.2"
           replace: ${{ steps.next-version.outputs.version }}
           regex: false
           include: VContainerSourceGenerator/VContainerSourceGenerator.csproj
