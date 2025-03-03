@@ -1,5 +1,6 @@
 namespace VContainerSourceGenerator.Templates;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +46,7 @@ public static class StructTemplate
         var ctorParametersSb = new StringBuilder();
         foreach (var parameter in ctorParameters)
         {
-            var parameterGetter = CreateMethodByCtorParameter(mainType, parameter);
+            var parameterGetter = CreateMethodByCtorParameter(mainType, parameter, usings.Add);
             ctorParametersSb.AppendLine(parameterGetter);
         }
 
@@ -85,8 +86,10 @@ public readonly struct {{mainType.Name}}Injector : IInjector
         return code;
     }
 
-    private static string CreateMethodByCtorParameter(INamedTypeSymbol mainType, IParameterSymbol parameter)
+    private static string CreateMethodByCtorParameter(INamedTypeSymbol mainType, IParameterSymbol parameter, Action<string> addUsing)
     {
+        addUsing(parameter.ContainingNamespace.ToDisplayString());
+        addUsing(parameter.Type.ContainingNamespace.ToDisplayString());
         var parameterTypeStr = parameter.Type.GetTypeName();
         var variable = parameter.Name.FirstCharToLower();
         var code = $$"""
