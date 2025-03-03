@@ -27,10 +27,10 @@
         <PackageTags />
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <PackageProjectUrl></PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/nazgull30/VContainerSourceGenerator-godot</PackageProjectUrl>
 
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl></RepositoryUrl>
+        <RepositoryUrl>https://github.com/nazgull30/VContainerSourceGenerator-godot</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
