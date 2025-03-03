@@ -10,7 +10,7 @@ public static class InjectExtensions
     public static List<IFieldSymbol> GetInjectableFields(this INamedTypeSymbol baseType)
     {
         var res = new List<IFieldSymbol>();
-        var fields = baseType.GetFields().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        var fields = baseType.GetFields().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
         foreach (var fieldInfo in fields)
         {
             var hasInject = fieldInfo.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
@@ -25,7 +25,7 @@ public static class InjectExtensions
     public static List<IPropertySymbol> GetInjectableProperties(this INamedTypeSymbol baseType)
     {
         var res = new List<IPropertySymbol>();
-        var properties = baseType.GetProperties().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        var properties = baseType.GetProperties().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
         foreach (var propertySymbol in properties)
         {
             var hasInject = propertySymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
@@ -40,7 +40,7 @@ public static class InjectExtensions
     public static List<IMethodSymbol> GetInjectableMethods(this INamedTypeSymbol baseType)
     {
         var res = new List<IMethodSymbol>();
-        var methods = baseType.GetMethods().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private).ToList();
+        var methods = baseType.GetMethods().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
         foreach (var methodSymbol in methods)
         {
             var hasInject = methodSymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();

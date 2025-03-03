@@ -2,12 +2,14 @@ namespace VContainerSourceGenerator.Tests.Src.Models;
 
 using System.Collections.Generic;
 using Godot;
+using VContainer;
 
+[GenerateInjector]
 public class PrinterHolder
 {
-    private readonly IList<IPrinter> _printers;
+    private readonly IReadOnlyList<IPrinter> _printers;
 
-    public PrinterHolder(IList<IPrinter> printers)
+    public PrinterHolder(IReadOnlyList<IPrinter> printers)
     {
         _printers = printers;
     }

@@ -3,7 +3,7 @@ namespace VContainerSourceGenerator.Tests.Src.Models;
 using Godot;
 using VContainer;
 
-// [GenerateInjector]
+[GenerateInjector]
 public class LogExample
 {
     public void Log()

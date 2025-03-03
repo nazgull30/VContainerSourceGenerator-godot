@@ -38,7 +38,7 @@ public static class InjectPropertiesTemplate
 
         statements.AppendLine(resolveStr);
 
-        if (propertyInfo.SetMethod != null)
+        if (propertyInfo.SetMethod != null && propertyInfo.SetMethod.DeclaredAccessibility == Accessibility.Public)
         {
             statements.AppendLine($"{mainType.Name.FirstCharToLower()}.{propertyInfo.Name} = ({propertyInfo.Type.GetTypeName()}){variable};");
         }

@@ -2,8 +2,8 @@ namespace VContainerSourceGenerator.Tests.Src.Models;
 
 using VContainer;
 
-// [GenerateInjector]
-public class Player
+[GenerateInjector]
+public class Player : IMyInterface
 {
     private readonly float _speed;
     private readonly Health _health;
@@ -15,9 +15,9 @@ public class Player
 
     private PrinterTwo _printerTwo;
 
-    [Inject] public Enemy.Factory _enemyFactoryOne;
+    [Inject] public Enemy.TestFactory _enemyFactoryOne;
 
-    [Inject] public Enemy.Factory EnemyFactoryOne { set; get; }
+    [Inject] public Enemy.TestFactory EnemyFactoryOne { set; get; }
 
     [Inject]
     protected void SetPrintOne(IPrinterOne printerOne)

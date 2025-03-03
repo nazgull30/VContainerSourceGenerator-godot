@@ -56,6 +56,7 @@ public static class InjectFieldsTemplate
         foreach (var field in fields)
         {
             addUsing(field.ContainingNamespace.ToDisplayString());
+            addUsing(field.Type.ContainingNamespace.ToDisplayString());
             var typeName = field.Type.GetTypeName();
             foreach (var geneticType in typeName.GenericTypes)
             {

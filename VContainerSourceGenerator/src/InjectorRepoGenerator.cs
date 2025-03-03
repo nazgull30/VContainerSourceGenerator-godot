@@ -37,10 +37,13 @@ public class InjectorRepoGenerator : IIncrementalGenerator
         var usings = new HashSet<string>();
         var usingsSb = new StringBuilder();
         var addsSb = new StringBuilder();
+        var format = new SymbolDisplayFormat(
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
         foreach (var symbol in symbols)
         {
             usings.Add(symbol.ContainingNamespace.ToDisplayString());
-            addsSb.AppendLine($"Injectors.Add(typeof({symbol.Name}), new {symbol.Name}Injector());");
+            addsSb.AppendLine($"Injectors.Add(typeof({symbol.ToDisplayString(format)}), new {symbol.Name}Injector());");
         }
         foreach (var u in usings)
         {

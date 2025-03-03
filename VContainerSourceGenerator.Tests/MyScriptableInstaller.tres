@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="MyScriptableInstaller" load_steps=2 format=3 uid="uid://cmsyoobpm4kji"]
+
+[ext_resource type="Script" path="res://Src/Installers/MyScriptableInstaller.cs" id="1_0n0hd"]
+
+[resource]
+script = ExtResource("1_0n0hd")

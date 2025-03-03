@@ -8,7 +8,7 @@ public interface ILogger
     public void Log(string message);
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class PlayerLogger : ILogger
 {
     public void Log(string message)
@@ -17,7 +17,7 @@ public class PlayerLogger : ILogger
     }
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class EnemyLogger : ILogger
 {
     public void Log(string message)
@@ -26,7 +26,7 @@ public class EnemyLogger : ILogger
     }
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class DefaultLogger : ILogger
 {
     public void Log(string message)

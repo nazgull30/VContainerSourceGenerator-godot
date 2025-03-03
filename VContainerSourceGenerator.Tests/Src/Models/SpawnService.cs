@@ -8,13 +8,13 @@ public interface ISpawnService<T1, T2>
 
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class SpawnService : ISpawnService<Health, IExternalTypeRetriever>
 {
 
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class SpawnServiceGeneric<Health, Player>
 {
 

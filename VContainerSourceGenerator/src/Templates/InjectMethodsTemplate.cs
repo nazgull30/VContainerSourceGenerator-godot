@@ -15,7 +15,7 @@ public static class InjectMethodsTemplate
 
         foreach (var methodInfo in methods)
         {
-            var methodStatements = CreateStatementsForOneField(mainType, methodInfo);
+            var methodStatements = CreateStatementsForOneMethod(mainType, methodInfo);
             statements.Append(methodStatements);
         }
 
@@ -31,7 +31,7 @@ public static class InjectMethodsTemplate
         return code;
     }
 
-    private static StringBuilder CreateStatementsForOneField(INamedTypeSymbol mainType, IMethodSymbol methodInfo)
+    private static StringBuilder CreateStatementsForOneMethod(INamedTypeSymbol mainType, IMethodSymbol methodInfo)
     {
         var parameters = methodInfo.Parameters;
         var statements = new StringBuilder();
@@ -84,7 +84,7 @@ public static class InjectMethodsTemplate
     private static string CreateStatementsForOneParameter(INamedTypeSymbol mainType, IParameterSymbol parameter)
     {
         var variable = parameter.Name.FirstCharToLower();
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}, \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}), \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.Name}));";
         return resolveStr;
     }
 

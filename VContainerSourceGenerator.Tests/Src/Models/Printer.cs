@@ -12,7 +12,7 @@ public interface IPrinterOne : IPrinter
 {
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class PrinterOne : IPrinterOne
 {
     public void Print()
@@ -21,7 +21,7 @@ public class PrinterOne : IPrinterOne
     }
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class PrinterTwo : IPrinter
 {
     public void Print()
@@ -30,7 +30,7 @@ public class PrinterTwo : IPrinter
     }
 }
 
-// [GenerateInjector]
+[GenerateInjector]
 public class PrinterThree : IPrinter
 {
     public void Print()
