@@ -2,7 +2,7 @@ namespace VContainerSourceGenerator.Tests.Src.Models;
 
 using VContainer;
 
-[GenerateInjector]
+// [GenerateInjector]
 public class Player : IMyInterface
 {
     private readonly float _speed;

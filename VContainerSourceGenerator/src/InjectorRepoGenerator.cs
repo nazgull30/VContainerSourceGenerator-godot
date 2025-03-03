@@ -17,7 +17,8 @@ public class InjectorRepoGenerator : IIncrementalGenerator
             .CreateSyntaxProvider(
                 predicate: (node, _) => node is ClassDeclarationSyntax,
                 transform: (context, _) => (context.Node as ClassDeclarationSyntax, context.SemanticModel))
-            .Where(pair => Utilities.HasAttribute("GenerateInjectorAttribute", pair.Item1, pair.Item2))
+            .Where(pair => Utilities.HasAttribute("GenerateInjectorAttribute", pair.Item1, pair.Item2)
+                        || Utilities.HasAttribute("ExternalTypeRetrieverAttribute", pair.Item1, pair.Item2))
             .Collect();
 
         context.RegisterSourceOutput(classDeclarations, GenerateCode);
@@ -30,8 +31,28 @@ public class InjectorRepoGenerator : IIncrementalGenerator
 
         foreach (var (ctx, semanticModel) in classes)
         {
+            var collector = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
+            var isCollector = Utilities.HasAttribute(collector, "ExternalTypeRetrieverAttribute");
+            if (isCollector)
+            {
+                var fields = collector.GetFields();
+                foreach (var field in fields)
+                {
+                    var classSymbol = field.Type as INamedTypeSymbol;
+                    symbols.Add(classSymbol);
+                }
+                break;
+            }
+        }
+
+        foreach (var (ctx, semanticModel) in classes)
+        {
             var classSymbol = semanticModel.GetDeclaredSymbol(ctx) as INamedTypeSymbol ?? throw new ArgumentException("classSymbol is null");
-            symbols.Add(classSymbol);
+            var shouldGenerateInjector = Utilities.HasAttribute(classSymbol, "GenerateInjectorAttribute");
+            if (shouldGenerateInjector)
+            {
+                symbols.Add(classSymbol);
+            }
         }
 
         var usings = new HashSet<string>();

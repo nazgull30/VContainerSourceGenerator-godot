@@ -17,9 +17,9 @@ public static class Utilities
         return symbol.GetAttributes().Any(a => a.AttributeClass?.Name == attributeName);
     }
 
-    private static bool HasAttribute(ISymbol symbol, string attributeFullName)
+    public static bool HasAttribute(ITypeSymbol symbol, string attributeName)
     {
-        return symbol.GetAttributes().Any(attr => attr.AttributeClass.ToDisplayString() == attributeFullName);
+        return symbol.GetAttributes().Any(attr => attr.AttributeClass.Name == attributeName);
     }
 
     public static bool ImplementsInterface(string interfaceFullName, TypeDeclarationSyntax ctx, SemanticModel semanticModel)
