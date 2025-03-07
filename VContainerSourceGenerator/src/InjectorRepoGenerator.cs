@@ -62,7 +62,7 @@ public class InjectorRepoGenerator : IIncrementalGenerator
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
         foreach (var symbol in symbols)
         {
-            usings.Add(symbol.ContainingNamespace.ToDisplayString());
+            usings.Add(symbol.ContainingNamespace.ToDisplayString(format));
             addsSb.AppendLine($"Injectors.Add(typeof({symbol.ToDisplayString(format)}), new {symbol.Name}Injector());");
         }
         foreach (var u in usings)
