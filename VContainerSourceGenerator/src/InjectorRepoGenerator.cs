@@ -58,7 +58,7 @@ public class InjectorRepoGenerator : IIncrementalGenerator
         var usingsSb = new StringBuilder();
         var addsSb = new StringBuilder();
         var format = new SymbolDisplayFormat(
-            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypes,
+            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
         foreach (var symbol in symbols)
         {
