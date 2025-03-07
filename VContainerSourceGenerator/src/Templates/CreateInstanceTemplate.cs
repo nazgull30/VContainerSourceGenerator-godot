@@ -10,22 +10,27 @@ public static class CreateInstanceTemplate
     public static string CreateInstance(INamedTypeSymbol mainType, Action<string> addUsing)
     {
         AddUsings(mainType, addUsing);
-        var constructor = mainType.GetInjectableConstructor();
-        var ctorParams = constructor.Parameters;
+
+
 
         var statements = new StringBuilder();
         var ctorParamsSb = new StringBuilder();
 
-        foreach (var parameter in ctorParams)
+        var constructor = mainType.GetInjectableConstructor();
+        if (constructor != null)
         {
-            var st = $"var {parameter.Name.FirstCharToLower()} = Get{parameter.Name.FirstCharToUpper()}(objResolver, parameters);";
-            statements.AppendLine(st);
-            ctorParamsSb.Append($"{parameter.Name.FirstCharToLower()}").Append(',');
-        }
+            var ctorParams = constructor.Parameters;
+            foreach (var parameter in ctorParams)
+            {
+                var st = $"var {parameter.Name.FirstCharToLower()} = Get{parameter.Name.FirstCharToUpper()}(objResolver, parameters);";
+                statements.AppendLine(st);
+                ctorParamsSb.Append($"{parameter.Name.FirstCharToLower()}").Append(',');
+            }
 
-        if (ctorParamsSb.Length > 0)
-        {
-            ctorParamsSb.Remove(ctorParamsSb.Length - 1, 1);
+            if (ctorParamsSb.Length > 0)
+            {
+                ctorParamsSb.Remove(ctorParamsSb.Length - 1, 1);
+            }
         }
 
         var mainTypeName = mainType.GetTypeName().Name;
@@ -60,10 +65,14 @@ public static class CreateInstanceTemplate
             addUsing(geneticType.ContainingNamespace.ToDisplayString());
         }
         var ctor = mainType.GetInjectableConstructor();
-        var ctorParams = ctor.Parameters;
-        foreach (var parameter in ctorParams)
+        if (ctor != null)
         {
-            addUsing(parameter.ContainingNamespace.ToDisplayString());
+            var ctorParams = ctor.Parameters;
+            foreach (var parameter in ctorParams)
+            {
+                addUsing(parameter.ContainingNamespace.ToDisplayString());
+            }
         }
+
     }
 }

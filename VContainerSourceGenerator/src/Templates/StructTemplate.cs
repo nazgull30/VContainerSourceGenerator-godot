@@ -38,17 +38,21 @@ public static class StructTemplate
             injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods, usings.Add);
         }
 
-        var constructor = mainType.GetInjectableConstructor();
-        var ctorParameters = constructor.Parameters;
-        var sb = new StringBuilder();
-        // ctorParameters.ToList().ForEach(p => sb.AppendLine(p.Name + ": " + p.Type.Name));
-        // File.WriteAllText($"{mainType.Name}.txt", sb.ToString());
         var ctorParametersSb = new StringBuilder();
-        foreach (var parameter in ctorParameters)
+        var constructor = mainType.GetInjectableConstructor();
+        if (constructor != null)
         {
-            var parameterGetter = CreateMethodByCtorParameter(mainType, parameter, usings.Add);
-            ctorParametersSb.AppendLine(parameterGetter);
+            var ctorParameters = constructor.Parameters;
+            var sb = new StringBuilder();
+            // ctorParameters.ToList().ForEach(p => sb.AppendLine(p.Name + ": " + p.Type.Name));
+            // File.WriteAllText($"{mainType.Name}.txt", sb.ToString());
+            foreach (var parameter in ctorParameters)
+            {
+                var parameterGetter = CreateMethodByCtorParameter(mainType, parameter, usings.Add);
+                ctorParametersSb.AppendLine(parameterGetter);
+            }
         }
+
 
         var usingsSb = new StringBuilder();
         var distinctUsings = usings.Distinct();

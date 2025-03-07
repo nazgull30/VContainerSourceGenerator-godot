@@ -57,8 +57,9 @@ public class InjectorGenerator : IIncrementalGenerator
 
     private static void GenerateCode(SourceProductionContext context, INamedTypeSymbol classSymbol)
     {
+        Logger.Log("GenerateCode: " + classSymbol.Name);
         var code = StructTemplate.Create(classSymbol);
         var formattedCode = code.FormatCode();
-        context.AddSource($"VContainerSourceGenerator/Injectors/{classSymbol.Name}.g.cs", formattedCode);
+        context.AddSource($"VContainerSourceGenerator.Injectors/{classSymbol.Name}.g.cs", formattedCode);
     }
 }

@@ -59,11 +59,7 @@ public class InjectorRepoGenerator : IIncrementalGenerator
         var addsSb = new StringBuilder();
         foreach (var symbol in symbols)
         {
-            var us = symbol.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            if (us != null)
-            {
-                usings.Add(us);
-            }
+            usings.Add(symbol.ContainingNamespace.ToDisplayString());
             addsSb.AppendLine($"Injectors.Add(typeof({symbol.ToDisplayString()}), new {symbol.Name}Injector());");
         }
         foreach (var u in usings)

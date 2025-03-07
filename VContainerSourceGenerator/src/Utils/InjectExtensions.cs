@@ -55,9 +55,14 @@ public static class InjectExtensions
     public static IMethodSymbol GetInjectableConstructor(this INamedTypeSymbol typeSymbol)
     {
         var constructors = typeSymbol.Constructors.Where(c => !c.IsStatic).ToList();
+        if (constructors.Count == 0)
+        {
+            return null;
+        }
+
         if (constructors.Count != 1)
         {
-            throw new ArgumentException($"Should be only one constructor {typeSymbol.Name}");
+            throw new ArgumentException($"Should be at least only one constructor {typeSymbol.Name} for class {typeSymbol.Name}. We found: {constructors.Count} cto");
         }
 
         return constructors[0];
