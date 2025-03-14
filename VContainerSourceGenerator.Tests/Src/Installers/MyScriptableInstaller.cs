@@ -15,7 +15,8 @@ public partial class MyScriptableInstaller : ScriptableObjectInstaller
     {
         _logExample.Log();
 
-        builder.RegisterInstance(new Health { Min = 10, Max = 100 });
+        // builder.RegisterInstance(new Health { Min = 10, Max = 100 });
+        builder.Register<Health>(Lifetime.Transient).AsSelf().WithParameter(10).WithParameter(100);
         builder.RegisterFactory<float, Enemy, Enemy.TestFactory>();
         builder.Register<Player>(Lifetime.Singleton).AsSelf().WithParameter(2f);
 

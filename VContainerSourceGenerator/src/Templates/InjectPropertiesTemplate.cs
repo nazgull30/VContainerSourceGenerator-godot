@@ -22,7 +22,7 @@ public static class InjectPropertiesTemplate
         var code = $$"""
                     private void InjectProperties(object instance, IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
                     {
-                        var {{mainType.GetTypeName().Name.FirstCharToLower()}} = ({{mainType.GetTypeName()}}) instance;
+                        var {{mainType.GetVariableName()}} = ({{mainType.GetTypeName()}}) instance;
                         {{statements}}
                     }
 """;
@@ -33,7 +33,7 @@ public static class InjectPropertiesTemplate
     private static StringBuilder CreateStatementsForOneProperty(INamedTypeSymbol mainType, IPropertySymbol propertyInfo)
     {
         var variable = propertyInfo.Name.FirstCharToLower();
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({propertyInfo.Type.GetTypeName()}), \"{propertyInfo.Name}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({propertyInfo.Type.GetTypeName()}), \"{propertyInfo.Name}\", parameters, typeof({mainType.GetTypeName()}));";
         var statements = new StringBuilder();
 
         statements.AppendLine(resolveStr);

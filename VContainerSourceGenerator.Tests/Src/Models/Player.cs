@@ -1,5 +1,6 @@
 namespace VContainerSourceGenerator.Tests.Src.Models;
 
+using Godot;
 using VContainer;
 using VContainerSourceGenerator.Tests.Src.Models.Test;
 
@@ -7,7 +8,7 @@ using VContainerSourceGenerator.Tests.Src.Models.Test;
 public class Player : IMyInterface
 {
     private readonly float _speed;
-    private readonly Health _health;
+    [Inject] private Health _health;
     private readonly ILogger _logger;
 
     [Inject] private IPrinterOne _printerOneOne;
@@ -37,11 +38,11 @@ public class Player : IMyInterface
     [Inject]
     public PrinterThree PrinterThree { set; get; }
 
-    public Player(float speed, Health health, ILogger logger)
+    public Player(float speed, ILogger logger)
     {
         _speed = speed;
-        _health = health;
         _logger = logger;
+        GD.Print("Player");
     }
 
     public void Move()

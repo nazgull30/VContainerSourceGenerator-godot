@@ -23,7 +23,7 @@ public static class InjectMethodsTemplate
         var code = $$"""
                     private void InjectMethods(object instance, IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
                     {
-                        var {{mainType.GetTypeName().Name.FirstCharToLower()}} = ({{mainType.GetTypeName()}}) instance;
+                        var {{mainType.GetVariableName()}} = ({{mainType.GetTypeName()}}) instance;
                         {{statements}}
                     }
 """;
@@ -84,7 +84,7 @@ public static class InjectMethodsTemplate
     private static string CreateStatementsForOneParameter(INamedTypeSymbol mainType, IParameterSymbol parameter)
     {
         var variable = parameter.Name.FirstCharToLower();
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}), \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({parameter.Type.GetTypeName()}), \"{parameter.Type.GetTypeName()}\", parameters, typeof({mainType.GetTypeName()}));";
         return resolveStr;
     }
 

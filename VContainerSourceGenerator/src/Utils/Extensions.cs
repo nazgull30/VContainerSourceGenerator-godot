@@ -183,4 +183,14 @@ public static class Extensions
             .OfType<IMethodSymbol>()
             .Where(f => !f.IsImplicitlyDeclared)];
     }
+
+    public static string GetVariableName(this INamedTypeSymbol type)
+    {
+        var isNested = type.ContainingType != null;
+        if (isNested)
+        {
+            return type.GetTypeName().Name.Split(".")[1].FirstCharToLower();
+        }
+        return type.GetTypeName().Name.FirstCharToLower();
+    }
 }

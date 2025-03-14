@@ -7,47 +7,65 @@ using Microsoft.CodeAnalysis;
 
 public static class InjectExtensions
 {
-    public static List<IFieldSymbol> GetInjectableFields(this INamedTypeSymbol baseType)
+    public static List<IFieldSymbol> GetInjectableFields(this INamedTypeSymbol typeSymbol)
     {
         var res = new List<IFieldSymbol>();
-        var fields = baseType.GetFields().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
-        foreach (var fieldInfo in fields)
+        while (typeSymbol != null && typeSymbol.SpecialType != SpecialType.System_Object)
         {
-            var hasInject = fieldInfo.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
-            if (hasInject)
+            var fields = typeSymbol.GetFields().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
+            foreach (var fieldSymbol in fields)
             {
-                res.Add(fieldInfo);
+                var hasInject = fieldSymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+                if (hasInject)
+                {
+                    res.Add(fieldSymbol);
+                }
             }
+
+            // Move to the base class
+            typeSymbol = typeSymbol.BaseType;
         }
         return res;
     }
 
-    public static List<IPropertySymbol> GetInjectableProperties(this INamedTypeSymbol baseType)
+    public static List<IPropertySymbol> GetInjectableProperties(this INamedTypeSymbol typeSymbol)
     {
         var res = new List<IPropertySymbol>();
-        var properties = baseType.GetProperties().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
-        foreach (var propertySymbol in properties)
+        while (typeSymbol != null && typeSymbol.SpecialType != SpecialType.System_Object)
         {
-            var hasInject = propertySymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
-            if (hasInject)
+            var properties = typeSymbol.GetProperties().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
+            foreach (var propertySymbol in properties)
             {
-                res.Add(propertySymbol);
+                var hasInject = propertySymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+                if (hasInject)
+                {
+                    res.Add(propertySymbol);
+                }
             }
+
+            // Move to the base class
+            typeSymbol = typeSymbol.BaseType;
         }
         return res;
     }
 
-    public static List<IMethodSymbol> GetInjectableMethods(this INamedTypeSymbol baseType)
+    public static List<IMethodSymbol> GetInjectableMethods(this INamedTypeSymbol typeSymbol)
     {
         var res = new List<IMethodSymbol>();
-        var methods = baseType.GetMethods().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
-        foreach (var methodSymbol in methods)
+        while (typeSymbol != null && typeSymbol.SpecialType != SpecialType.System_Object)
         {
-            var hasInject = methodSymbol.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
-            if (hasInject)
+            var methods = typeSymbol.GetMethods().Where(f => f.DeclaredAccessibility is Accessibility.Public or Accessibility.Private or Accessibility.Protected).ToList();
+            foreach (var method in methods)
             {
-                res.Add(methodSymbol);
+                var hasInject = method.GetAttributes().Where(f => f.AttributeClass.Name == "InjectAttribute").Any();
+                if (hasInject)
+                {
+                    res.Add(method);
+                }
             }
+
+            // Move to the base class
+            typeSymbol = typeSymbol.BaseType;
         }
         return res;
     }

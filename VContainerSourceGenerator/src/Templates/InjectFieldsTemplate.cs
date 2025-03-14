@@ -23,7 +23,7 @@ public static class InjectFieldsTemplate
         var code = $$"""
                     private void InjectFields(object instance, IObjectResolver objResolver, IReadOnlyList<IInjectParameter> parameters)
                     {
-                        var {{mainType.GetTypeName().Name.FirstCharToLower()}} = ({{mainType.GetTypeName()}}) instance;
+                        var {{mainType.GetVariableName()}} = ({{mainType.GetTypeName()}}) instance;
                         {{statements}}
                     }
 """;
@@ -34,7 +34,7 @@ public static class InjectFieldsTemplate
     private static StringBuilder CreateStatementsForOneField(INamedTypeSymbol mainType, IFieldSymbol fieldInfo)
     {
         var variable = fieldInfo.Name.Replace("_", "");
-        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({fieldInfo.Type.GetTypeName()}), \"{fieldInfo.Name}\", parameters, typeof({mainType.Name}));";
+        var resolveStr = $"var {variable} = objResolver.ResolveOrParameter(typeof({fieldInfo.Type.GetTypeName()}), \"{fieldInfo.Name}\", parameters, typeof({mainType.GetTypeName()}));";
         var statements = new StringBuilder();
 
         statements.AppendLine(resolveStr);
