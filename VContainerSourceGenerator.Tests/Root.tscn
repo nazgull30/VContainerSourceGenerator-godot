@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://c6hqk25dfnf50"]
 
-[ext_resource type="Script" path="res://addons/VContainer/Unity/RootLifetimeScope.cs" id="1_fim1g"]
-[ext_resource type="Script" path="res://addons/VContainer/Unity/VContainerSettings.cs" id="2_ivy6b"]
-[ext_resource type="Script" path="res://Src/Installers/RootInstaller.cs" id="3_7sawe"]
+[ext_resource type="Script" uid="uid://bkpk75motldkk" path="res://addons/VContainer/Unity/RootLifetimeScope.cs" id="1_fim1g"]
+[ext_resource type="Script" uid="uid://xcd7vawdwbnq" path="res://addons/VContainer/Unity/VContainerSettings.cs" id="2_ivy6b"]
+[ext_resource type="Script" uid="uid://pa7aj3m45tak" path="res://Src/Installers/RootInstaller.cs" id="3_7sawe"]
 
 [sub_resource type="Resource" id="Resource_4rvsc"]
 script = ExtResource("2_ivy6b")

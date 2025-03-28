@@ -2,7 +2,7 @@ namespace VContainerSourceGenerator.Tests.Src;
 
 using Godot;
 using VContainer;
-using VContainer.Unity;
+using VContainer.Godot;
 using VContainerSourceGenerator.Tests.Src.Models;
 
 [GenerateInjector]

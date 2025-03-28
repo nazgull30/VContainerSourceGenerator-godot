@@ -1,6 +1,6 @@
 namespace VContainerSourceGenerator.Tests.Src;
 
-using VContainer.Unity;
+using VContainer.Godot;
 
 public partial class SceneLifestyle : LifetimeScope
 {
