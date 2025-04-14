@@ -95,6 +95,7 @@ public static class InjectMethodsTemplate
             foreach (var parameter in method.Parameters)
             {
                 addUsing(parameter.ContainingNamespace.ToDisplayString());
+                addUsing(parameter.Type.ContainingNamespace.ToDisplayString());
                 var paramTypeName = parameter.Type.GetTypeName();
                 foreach (var geneticType in paramTypeName.GenericTypes)
                 {

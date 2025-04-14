@@ -11,31 +11,31 @@ public static class StructTemplate
 {
     public static string Create(INamedTypeSymbol mainType)
     {
-        var usings = new List<string>();
+        var usings = new HashSet<string>();
 
         var fields = mainType.GetInjectableFields();
         var properties = mainType.GetInjectableProperties();
         var methods = mainType.GetInjectableMethods();
 
         var injectInfo = InjectTemplate.Create(fields.Count, properties.Count, methods.Count);
-        var createInstanceInfo = CreateInstanceTemplate.CreateInstance(mainType, usings.Add);
+        var createInstanceInfo = CreateInstanceTemplate.CreateInstance(mainType, (u) => usings.Add(u));
 
         var injectFieldsInfo = "";
         if (fields.Count > 0)
         {
-            injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields, usings.Add);
+            injectFieldsInfo = InjectFieldsTemplate.CreateInjectFields(mainType, fields, (u) => usings.Add(u));
         }
 
         var injectPropertiesInfo = "";
         if (properties.Count > 0)
         {
-            injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties, usings.Add);
+            injectPropertiesInfo = InjectPropertiesTemplate.CreateProperties(mainType, properties, (u) => usings.Add(u));
         }
 
         var injectMethodsInfo = "";
         if (methods.Count > 0)
         {
-            injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods, usings.Add);
+            injectMethodsInfo = InjectMethodsTemplate.CreateInjectMethods(mainType, methods, (u) => usings.Add(u));
         }
 
         var ctorParametersSb = new StringBuilder();
@@ -48,28 +48,24 @@ public static class StructTemplate
             // File.WriteAllText($"{mainType.Name}.txt", sb.ToString());
             foreach (var parameter in ctorParameters)
             {
-                var parameterGetter = CreateMethodByCtorParameter(mainType, parameter, usings.Add);
+                var parameterGetter = CreateMethodByCtorParameter(mainType, parameter, (u) => usings.Add(u));
                 ctorParametersSb.AppendLine(parameterGetter);
             }
         }
 
 
         var usingsSb = new StringBuilder();
-        var distinctUsings = usings.Distinct();
-        foreach (var u in distinctUsings)
+        foreach (var u in usings)
         {
             usingsSb.AppendLine($"using {u};");
         }
-
-        var usingsStr = usingsSb.ToString();
 
         var code = $$"""
 namespace VContainer.Injectors;
 
 using System.Collections.Generic;
-using VContainer;
 
-{{usingsStr}}
+{{usingsSb}}
 
 public readonly struct {{mainType.Name}}Injector : IInjector
 {

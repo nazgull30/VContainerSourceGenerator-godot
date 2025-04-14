@@ -11,8 +11,6 @@ public static class CreateInstanceTemplate
     {
         AddUsings(mainType, addUsing);
 
-
-
         var statements = new StringBuilder();
         var ctorParamsSb = new StringBuilder();
 
